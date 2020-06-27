@@ -182,7 +182,7 @@ int device_start_k051649(UINT8 ChipID, int clock)
 		info->channel_list[CurChn].Muted = 0x00;
 
 #ifdef MSX_USB_SLOT
-	if (MSXUSBSlot && MSXUSBSlotSCC)
+	if (MSXUSBSlot && MSXUSBSlotSCC && msxusbslot_IsOpen())
 		msxusbslot_writeByte(0x9000, 0x3F);
 #endif
 
@@ -192,7 +192,7 @@ int device_start_k051649(UINT8 ChipID, int clock)
 void device_stop_k051649(UINT8 ChipID)
 {
 #ifdef MSX_USB_SLOT
-	if (MSXUSBSlot && MSXUSBSlotSCC) {
+	if (MSXUSBSlot && MSXUSBSlotSCC && msxusbslot_IsOpen()) {
 		msxusbslot_writeSCC(0x8A, 0x00);
 		msxusbslot_writeSCC(0x8B, 0x00);
 		msxusbslot_writeSCC(0x8C, 0x00);
@@ -375,7 +375,7 @@ void k051649_w(UINT8 ChipID, offs_t offset, UINT8 data)
 	k051649_state *info = &SCC1Data[ChipID];
 
 #ifdef MSX_USB_SLOT
-	if (MSXUSBSlot && MSXUSBSlotSCC) {
+	if (MSXUSBSlot && MSXUSBSlotSCC && msxusbslot_IsOpen()) {
 
 		if ((offset & 1) == 0) {
 			info->cur_reg = data;

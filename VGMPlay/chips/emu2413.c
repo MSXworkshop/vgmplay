@@ -1116,8 +1116,8 @@ void OPLL_delete(OPLL *opll) {
   free(opll);
 
 #ifdef MSX_USB_SLOT
-  if (MSXUSBSlot && MSXUSBSlotOPLL) {
-	  for (int i = 0; i < 40; i++) {
+  if (MSXUSBSlot && MSXUSBSlotOPLL && msxusbslot_IsOpen()) {
+	  for (int i = 0; i < 0x40; i++) {
 		  msxusbslot_writeOPLL(i, 0);
 	  }
   }
@@ -1224,11 +1224,9 @@ void OPLL_writeReg(OPLL *opll, uint32_t reg, uint8_t data) {
   opll->reg[reg] = (uint8_t)data;
 
 #ifdef MSX_USB_SLOT
-  if (MSXUSBSlot && MSXUSBSlotOPLL) {
-	  if (msxusbslot_IsOpen()) {
-		  msxusbslot_writeOPLL(reg, data);
-		  return;
-	  }
+  if (MSXUSBSlot && MSXUSBSlotOPLL && msxusbslot_IsOpen()) {
+	msxusbslot_writeOPLL(reg, data);
+	return;
   }
 #endif
   switch (reg) {

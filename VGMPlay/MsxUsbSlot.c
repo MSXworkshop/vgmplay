@@ -173,34 +173,45 @@ void msxusbslot_writeByte(int addr, int data)
 {
 	UINT8 buf[4];
 	buf[0] = 'b';
-	buf[1] = addr & 0xFF;
-	buf[2] = (addr >> 8) & 0xFF;
+	buf[1] = (addr >> 8) & 0xFF;
+	buf[2] = addr & 0xFF;
 	buf[3] = data;
 	serial_Write(buf, 4);
 }
+
+static BYTE bufOPLL[0x100];
 
 void msxusbslot_writeOPLL(int reg, int data)
 {
 	if (!serial_IsOpen()) {
 		return;
 	}
-	BYTE buf[3];
-	buf[0] = 'f';
-	buf[1] = reg;
-	buf[2] = data;
-	serial_Write(buf, 3);
+	if (bufOPLL[reg & 0xFF] != data) {
+		BYTE buf[3];
+		buf[0] = 'f';
+		buf[1] = reg;
+		buf[2] = data;
+		serial_Write(buf, 3);
+		bufOPLL[reg & 0xFF] = data;
+	}
 }
+
+static BYTE bufSCC[0x100];
 
 void msxusbslot_writeSCC(int addr, int data)
 {
 	if (!serial_IsOpen()) {
 		return;
 	}
-	BYTE buf[3];
-	buf[0] = 'c';
-	buf[1] = addr;
-	buf[2] = data;
-	serial_Write(buf, 3);
+
+	if (bufSCC[addr & 0xFF] != data) {
+		BYTE buf[3];
+		buf[0] = 'c';
+		buf[1] = addr;
+		buf[2] = data;
+		serial_Write(buf, 3);
+		bufSCC[addr & 0xFF] = data;
+	}
 }
 
 #endif
