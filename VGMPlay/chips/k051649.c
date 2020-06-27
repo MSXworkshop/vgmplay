@@ -29,6 +29,13 @@
 //#include "streams.h"
 #include "k051649.h"
 
+#ifdef MSX_USB_SLOT
+#include <stdbool.h>
+#include "../MsxUsbSlot.h"
+extern bool MSXUSBSlot;
+extern bool MSXUSBSlotSCC;
+#endif
+
 #define FREQ_BITS	16
 #define DEF_GAIN	8
 
@@ -173,12 +180,27 @@ int device_start_k051649(UINT8 ChipID, int clock)
 	
 	for (CurChn = 0; CurChn < 5; CurChn ++)
 		info->channel_list[CurChn].Muted = 0x00;
-	
+
+#ifdef MSX_USB_SLOT
+	if (MSXUSBSlot && MSXUSBSlotSCC)
+		msxusbslot_writeByte(0x9000, 0x3F);
+#endif
+
 	return info->rate;
 }
 
 void device_stop_k051649(UINT8 ChipID)
 {
+#ifdef MSX_USB_SLOT
+	if (MSXUSBSlot && MSXUSBSlotSCC) {
+		msxusbslot_writeSCC(0x8A, 0x00);
+		msxusbslot_writeSCC(0x8B, 0x00);
+		msxusbslot_writeSCC(0x8C, 0x00);
+		msxusbslot_writeSCC(0x8D, 0x00);
+		msxusbslot_writeSCC(0x8E, 0x00);
+	}
+#endif
+
 	k051649_state *info = &SCC1Data[ChipID];
 	
 	free(info->mixer_buffer);
@@ -351,7 +373,42 @@ UINT8 k051649_test_r(UINT8 ChipID, offs_t offset)
 void k051649_w(UINT8 ChipID, offs_t offset, UINT8 data)
 {
 	k051649_state *info = &SCC1Data[ChipID];
-	
+
+#ifdef MSX_USB_SLOT
+	if (MSXUSBSlot && MSXUSBSlotSCC) {
+
+		if ((offset & 1) == 0) {
+			info->cur_reg = data;
+			return;
+		}
+
+		int addr = 0xA0; // no function
+		switch (offset >> 1)
+		{
+		case 0x00: // waveform
+			addr = info->cur_reg; // 9800-987F
+			break;
+		case 0x01: // frequency
+			addr = 0x80 + info->cur_reg; // 9880-9889
+			break;
+		case 0x02: // volume
+			addr = 0x8A + info->cur_reg; // 988A-988E
+			break;
+		case 0x03: // key on/off
+			addr = 0x8F;
+			break;
+		case 0x04: // SCC-I
+			// ignore for ch5 data
+			break;
+		case 0x05: // test
+			addr = 0xE0;
+			break;
+		}
+		msxusbslot_writeSCC(addr, data);
+		return;
+	}
+#endif
+
 	switch(offset & 1)
 	{
 	case 0x00:

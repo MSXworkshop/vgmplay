@@ -17,6 +17,13 @@
 #include <string.h>
 #include "panning.h" // Maxim
 
+#ifdef MSX_USB_SLOT
+#include <stdbool.h>
+#include "../MsxUsbSlot.h"
+extern bool MSXUSBSlot;
+extern bool MSXUSBSlotOPLL;
+#endif
+
 #ifndef INLINE
 #if defined(_MSC_VER)
 #define INLINE __inline
@@ -1107,6 +1114,14 @@ void OPLL_delete(OPLL *opll) {
     opll->conv = NULL;
   }
   free(opll);
+
+#ifdef MSX_USB_SLOT
+  if (MSXUSBSlot && MSXUSBSlotOPLL) {
+	  for (int i = 0; i < 40; i++) {
+		  msxusbslot_writeOPLL(i, 0);
+	  }
+  }
+#endif
 }
 
 static void reset_rate_conversion_params(OPLL *opll) {
@@ -1208,6 +1223,14 @@ void OPLL_writeReg(OPLL *opll, uint32_t reg, uint8_t data) {
 
   opll->reg[reg] = (uint8_t)data;
 
+#ifdef MSX_USB_SLOT
+  if (MSXUSBSlot && MSXUSBSlotOPLL) {
+	  if (msxusbslot_IsOpen()) {
+		  msxusbslot_writeOPLL(reg, data);
+		  return;
+	  }
+  }
+#endif
   switch (reg) {
   case 0x00:
     opll->patch[0].AM = (data >> 7) & 1;

@@ -97,6 +97,7 @@
     <ClInclude Include="chips\ymz280b.h" />
     <ClInclude Include="dbus.h" />
     <ClInclude Include="mmkeys.h" />
+    <ClInclude Include="MsxUsbSlot.h" />
     <ClInclude Include="PortTalk_IOCTL.h" />
     <ClInclude Include="Stream.h" />
     <ClInclude Include="VGMFile.h" />
@@ -194,6 +195,7 @@
     <ClCompile Include="chips\ymz280b.c" />
     <ClCompile Include="dbus_stub.c" />
     <ClCompile Include="mmkeys_Win.c" />
+    <ClCompile Include="MsxUsbSlot.c" />
     <ClCompile Include="pt_ioctl.c" />
     <ClCompile Include="Stream.c" />
     <ClCompile Include="VGMPlay.c" />
@@ -285,7 +287,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>VGM_LITTLE_ENDIAN;ENABLE_ALL_CORES;CONSOLE_MODE;ADDITIONAL_FORMATS;SET_CONSOLE_TITLE;_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>MSX_USB_SLOT;VGM_LITTLE_ENDIAN;ENABLE_ALL_CORES;CONSOLE_MODE;ADDITIONAL_FORMATS;SET_CONSOLE_TITLE;_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -316,7 +318,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>VGM_LITTLE_ENDIAN;ENABLE_ALL_CORES;CONSOLE_MODE;ADDITIONAL_FORMATS;SET_CONSOLE_TITLE;_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>MSX_USB_SLOT;VGM_LITTLE_ENDIAN;ENABLE_ALL_CORES;CONSOLE_MODE;ADDITIONAL_FORMATS;SET_CONSOLE_TITLE;_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>

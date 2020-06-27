@@ -40,6 +40,10 @@
 #include "mmkeys.h"
 #include "dbus.h"
 
+#ifdef MSX_USB_SLOT
+#include "MsxUsbSlot.h"
+#endif
+
 #ifdef XMAS_EXTRA
 #include "XMasFiles/XMasBonus.h"
 #endif
@@ -152,6 +156,12 @@ extern bool FMForce;
 extern bool FMBreakFade;
 extern float FMVol;
 extern bool FMOPL2Pan;
+
+#ifdef MSX_USB_SLOT
+extern bool MSXUSBSlot;
+extern bool MSXUSBSlotOPLL;
+extern bool MSXUSBSlotSCC;
+#endif
 
 extern CHIPS_OPTION ChipOpts[0x02];
 
@@ -408,6 +418,15 @@ int main(int argc, char* argv[])
 			break;
 		}
 	}
+
+#ifdef MSX_USB_SLOT
+	if (MSXUSBSlot) {
+		int nMsxUsbSlotPort = msxusbslot_Open();
+		if (msxusbslot_IsOpen()) {
+			printf("\nMSX USB SLOT is Found at COM%d\n\n", nMsxUsbSlotPort);
+		}
+	}
+#endif
 	
 	printf("\nFile Name:\t");
 	if (argc <= argbase)
@@ -443,13 +462,13 @@ int main(int argc, char* argv[])
 		//
 		// Input CP 850, Output CP 850
 		//	Debug build:	Dynamite D³x
-		//	Release build:	Dynamite Düx
+		//	Release build:	Dynamite D?
 		// Input CP 1252, Output CP 850
 		//	Debug build:	Dynamite D³x
 		//	Release build:	Dynamite D³x
 		// Input CP 850, Output CP 1252
 		//	Debug build:	Dynamite D³x [tag display wrong]
-		//	Release build:	Dynamite Düx [tag display wrong]
+		//	Release build:	Dynamite D? [tag display wrong]
 		// Input CP 1252, Output CP 1252
 		//	Debug build:	Dynamite D³x [tag display wrong]
 		//	Release build:	Dynamite D³x [tag display wrong]
@@ -665,7 +684,14 @@ ExitProgram:
 	MultimediaKeyHook_Deinit();
 	VGMPlay_Deinit();
 	free(AppName);
-	
+
+#ifdef MSX_USB_SLOT
+	if (MSXUSBSlot) {
+		Sleep(10);
+		msxusbslot_Close();
+	}
+#endif
+
 	return ErrRet;
 }
 
@@ -1263,6 +1289,20 @@ static void ReadOptions(const char* AppName)
 				{
 					FMBreakFade = GetBoolFromStr(RStr);
 				}
+#ifdef MSX_USB_SLOT
+				else if (!stricmp_u(LStr, "MSXUSBSlot"))
+				{
+					MSXUSBSlot = GetBoolFromStr(RStr);
+				}
+				else if (!stricmp_u(LStr, "MSXUSBSlotOPLL"))
+				{
+					MSXUSBSlotOPLL = GetBoolFromStr(RStr);
+				}
+				else if (!stricmp_u(LStr, "MSXUSBSlotSCC"))
+				{
+					MSXUSBSlotSCC = GetBoolFromStr(RStr);
+				}
+#endif
 				break;
 			case 0x80:	// SN76496
 			case 0x81:	// YM2413

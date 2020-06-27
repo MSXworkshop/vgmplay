@@ -321,6 +321,12 @@ bool FMBreakFade;
 float FMVol;
 bool FMOPL2Pan;
 
+#ifdef MSX_USB_SLOT
+bool MSXUSBSlot;
+bool MSXUSBSlotOPLL;
+bool MSXUSBSlotSCC;
+#endif
+
 CHIPS_OPTION ChipOpts[0x02];
 
 UINT8 OPL_MODE;
@@ -452,6 +458,12 @@ void VGMPlay_Init(void)
 	VGMPbRate = 0;
 #ifdef ADDITIONAL_FORMATS
 	CMFMaxLoop = 0x01;
+#endif
+
+#ifdef MSX_USB_SLOT
+	MSXUSBSlot = false;
+	MSXUSBSlotOPLL = false;
+	MSXUSBSlotSCC = false;
 #endif
 	ResampleMode = 0x00;
 	CHIP_SAMPLING_MODE = 0x00;
